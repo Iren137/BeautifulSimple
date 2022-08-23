@@ -4,15 +4,6 @@
 #include <fstream>
 #include <vector>
 
-bool IsPrime(uint64_t num) {
-  for (uint64_t i = 2; i < (std::sqrt(num) + 1); i++) {
-    if (num % i == 0) {
-      return false;
-    }
-  }
-  return true;
-}
-
 std::pair<bool, std::vector<int8_t>> GetNumbers(uint64_t num) {
   bool out = true;
   std::vector<int8_t> numbers;
@@ -66,10 +57,18 @@ void WringNumber(const std::vector<uint64_t>& numbers) {
 }
 
 int main() {
-  // todo
+  char c = ' ';
+  std::fstream fin;
+  for (uint64_t num = 2; num < UINT64_MAX; ++num) {
+    for (uint64_t i = 2; i < (std::sqrt(num) + 1); i++) {
+      if (num % i == 0) {
+        break;
+      }
+    }
+    fin >> num >> c;
+  }
 
   std::vector<uint64_t> primes;
-  std::fstream fin;
   uint64_t prime;
   while (!fin.eof()) {
     std::cin >> prime;

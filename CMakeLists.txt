@@ -3,4 +3,5 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(untitled main.cpp)
+add_executable(beautiful_primes main.cpp)
+add_executable(all_primes primes.cpp)

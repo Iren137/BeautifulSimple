@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 std::pair<bool, std::vector<int8_t>> GetNumbers(uint64_t num) {

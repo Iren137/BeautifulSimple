@@ -1,79 +1,61 @@
-#include <algorithm>
-#include <cmath>
-#include <fstream>
+#include "pretty_number.h"
+
 #include <iostream>
-#include <vector>
 
-std::pair<bool, std::vector<int8_t>> GetNumbers(uint64_t num) {
-  bool out = true;
-  std::vector<int8_t> numbers;
-  while (num != 0) {
-    int t = num % 10;
-    if (t == 5 || t % 2 == 0) {
-      out = false;
-      break;
+bool IsSimple(int64_t number) {
+  for (int i = 2; i <= number / i; ++i) {
+    if (number % i == 0) {
+      // std::cout << "\t\t\tMistake: " << number << " / " << i << "\n";
+      return false;
     }
-    numbers.push_back(t);
-    num /= 10;
   }
-  return std::make_pair(out, numbers);
+  return true;
 }
 
-bool BinFind(const std::vector<uint64_t>& numbers, uint64_t value) {
-  int midd = 0;
-  int left = 0;
-  int right = numbers.size();
-  while (left <= right) {
-    midd = (left + right) / 2;
-
-    if (value < numbers[midd])
-      right = midd - 1;
-    else if (value > numbers[midd])
-      left = midd + 1;
-    else
-      return true;
-  }
-  return false;
+bool IsPretty(PrettyNumber number) {
+  std::string permutation = number.ToString();
+  do {
+    if (!IsSimple(std::stoll(permutation))) {
+      return false;
+    }
+  } while (std::next_permutation(permutation.begin(),
+                                 permutation.end()));
+  return true;
 }
 
-void WringNumber(const std::vector<uint64_t>& numbers) {
-  for (auto number: numbers) {
-    if (!GetNumbers(number).first) break;
-
-    bool is_beautiful = true;
-    std::string s{std::to_string(number)};
-    std::sort(s.begin(), s.end());
-    do {
-      unsigned long value{std::stoul(s)};
-      if (!BinFind(numbers, value)) {
-        is_beautiful = false;
-        break;
+std::vector<PrettyNumber> GetAllPrettyNumbersWithFixedSize(int64_t size) {
+  std::vector<PrettyNumber> results;
+  for (int64_t ones_count = 0; ones_count <= size; ++ones_count) {
+    int64_t size_379 = size - ones_count;
+    for (int64_t threes_count = 0; threes_count <= size_379; ++threes_count) {
+      int64_t size_79 = size_379 - threes_count;
+      for (int64_t sevens_count = 0; sevens_count <= size_79; ++sevens_count) {
+        PrettyNumber new_number(ones_count,
+                                threes_count,
+                                sevens_count,
+                                size_79 - sevens_count);
+        if (!new_number.IsSimplyPretty()) continue;
+        if (IsPretty(new_number)) {
+          results.push_back(new_number);
+        }
       }
-    } while (std::next_permutation(s.begin(), s.end()));
-    if (is_beautiful) {
-      std::cout << number << '\n';
     }
   }
+  return results;
 }
 
 int main() {
-  char c = ' ';
-  std::fstream fin;
-  for (uint64_t num = 2; num < UINT64_MAX; ++num) {
-    for (uint64_t i = 2; i < (std::sqrt(num) + 1); i++) {
-      if (num % i == 0) {
-        break;
-      }
+  int64_t max_size = 17;
+  std::vector<PrettyNumber> pretty_numbers;
+  for (int64_t size = 1; size <= max_size; ++size) {
+    auto new_numbers = GetAllPrettyNumbersWithFixedSize(size);
+    for (const auto& new_number : new_numbers) {
+      pretty_numbers.push_back(new_number);
     }
-    fin >> num >> c;
   }
 
-  std::vector<uint64_t> primes;
-  uint64_t prime;
-  while (!fin.eof()) {
-    std::cin >> prime;
-    primes.emplace_back(prime);
+  for (const auto& number : pretty_numbers) {
+    std::cout << number.ToString() << "\n";
   }
-  WringNumber(primes);
   return 0;
 }
